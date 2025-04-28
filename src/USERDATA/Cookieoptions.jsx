@@ -1,135 +1,147 @@
-import React, { useState, useEffect } from 'react';
+
+
+
+import React, { useState } from "react";
+import { FaCookieBite } from "react-icons/fa";
 
 const COOKIE_OPTIONS = [
   "Functionality",
   "Analytics Storage",
   "Ad Storage",
   "Ad User Data",
-  "Ad Personalisation",
+  "Ad Personalization",
   "Personalization Storage",
-  "Security Storage"
+  "Security Storage",
 ];
 
 const Cookieoptions = () => {
-  const [checked, setChecked] = useState({
-    "Functionality": false,
-    "Analytics Storage": false,
-    "Ad Storage": true,
-    "Ad User Data": true,
-    "Ad Personalisation": true,
-    "Personalization Storage": true,
-    "Security Storage": true
-  });
+  const [checked, setChecked] = useState(
+    COOKIE_OPTIONS.reduce((acc, key) => ({ ...acc, [key]: true }), {})
+  );
+  const [showNotificationBar, setShowNotificationBar] = useState(true);
+  const [showManageModal, setShowManageModal] = useState(false);
 
-  const handleToggle = (key) => {
-    setChecked(prev => ({ ...prev, [key]: !prev[key] }));
+  const handleAcceptAll = () => {
+    setChecked(
+      COOKIE_OPTIONS.reduce((acc, key) => ({ ...acc, [key]: true }), {})
+    );
+    setShowNotificationBar(false);
+    console.log("All cookies accepted");
   };
 
-  const handleCancel = () => {
-    console.log("Cancelled cookie settings.");
+  const handleRejectAll = () => {
+    setChecked(
+      COOKIE_OPTIONS.reduce((acc, key) => ({ ...acc, [key]: false }), {})
+    );
+    setShowNotificationBar(false);
+    console.log("All cookies rejected");
   };
 
   const handleDone = () => {
-    console.log("Saved cookie settings:", checked);
+    setShowManageModal(false);
+    setShowNotificationBar(false);
+    console.log("Saved settings:", checked);
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.heading}>Cookie Settings</h2>
-      <p style={styles.description}>
-        We use cookies to provide you with the best possible experience. They also allow us to analyze user behavior in order to constantly improve the website for you.
-      </p>
-      <p>
-        <a href="/privacy-policy" style={styles.link}>See our Privacy Policy.</a>
-      </p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4 sm:p-6">
+      {/* Notification Popup */}
+      {showNotificationBar && !showManageModal && (
+        <div className="fixed bottom-0 left-0 right-0 sm:bottom-auto sm:top-6 sm:right-6 sm:left-auto bg-white border border-gray-200 rounded-t-2xl sm:rounded-2xl p-4 sm:p-6 shadow-xl w-full sm:w-[350px] md:w-[400px] flex flex-col gap-4 sm:gap-6 z-50">
+          <div className="flex items-start gap-3 sm:gap-4">
+            <FaCookieBite className="text-3xl sm:text-4xl text-yellow-500 mt-1" />
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold mb-1">We use Cookies</h2>
+              <p className="text-gray-600 text-sm sm:text-lg">
+                We use cookies to enhance your experience. Read our{" "}
+                <a href="/privacy-policy" className="underline">
+                  Privacy Policy
+                </a>
+              </p>
+            </div>
+          </div>
 
-      <div style={styles.checkboxList}>
-        {COOKIE_OPTIONS.map(option => (
-          <label key={option} style={styles.checkboxLabel}>
-            <input
-              type="checkbox"
-              checked={checked[option]}
-              onChange={() => handleToggle(option)}
-              style={styles.checkbox}
-            />
-            {option}
-          </label>
-        ))}
-      </div>
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-3">
+            <button
+              onClick={handleRejectAll}
+              className="px-4 py-2 sm:px-5 sm:py-2 border border-black rounded-full text-sm sm:text-base font-semibold hover:bg-gray-100 flex-1 sm:flex-none"
+            >
+              Reject All
+            </button>
+            <button
+              onClick={() => setShowManageModal(true)}
+              className="px-4 py-2 sm:px-5 sm:py-2 border border-black rounded-full text-sm sm:text-base font-semibold hover:bg-gray-100 flex-1 sm:flex-none"
+            >
+              Manage
+            </button>
+            <button
+              onClick={handleAcceptAll}
+              className="px-4 py-2 sm:px-5 sm:py-2 bg-black text-black rounded-full text-sm sm:text-base font-semibold hover:bg-gray-800 flex-1 sm:flex-none"
+            >
+              Accept All
+            </button>
+          </div>
+        </div>
+      )}
 
-      <div style={styles.buttonRow}>
-        <button onClick={handleCancel} style={styles.cancelButton}>Cancel</button>
-        <button onClick={handleDone} style={styles.doneButton}>Done</button>
-      </div>
+      {/* Manage Model */}
+      {showManageModal && (
+        <div className="fixed inset-0 bg-gray-400 bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-6">
+          <div className="bg-white p-6 sm:p-8 md:p-10 rounded-2xl shadow-2xl max-w-full sm:max-w-lg w-full relative mx-2 sm:mx-0">
+            <div className="flex flex-col items-center gap-3 sm:gap-4">
+              <FaCookieBite className="text-5xl sm:text-6xl text-yellow-500" />
+              <h2 className="text-2xl sm:text-3xl font-bold">Cookie Settings</h2>
+              <p className="text-sm sm:text-base md:text-lg text-gray-700 text-center">
+                We use cookies to provide you with the best possible experience.
+                They also allow us to analyze user behavior to constantly
+                improve.
+              </p>
+              <a href="/privacy-policy" className="text-blue-600 underline text-sm sm:text-base">
+                See our Privacy Policy.
+              </a>
+            </div>
+
+            <div className="mt-6 sm:mt-8 space-y-3 sm:space-y-4">
+              {COOKIE_OPTIONS.map((option) => (
+                <label key={option} className="flex items-center gap-3 sm:gap-4 text-sm sm:text-base md:text-lg">
+                  <input
+                    type="checkbox"
+                    checked={checked[option]}
+                    onChange={() =>
+                      setChecked((prev) => ({
+                        ...prev,
+                        [option]: !prev[option],
+                      }))
+                    }
+                    className="w-4 h-4 sm:w-5 sm:h-5"
+                  />
+                  {option}
+                </label>
+              ))}
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-3 sm:gap-4 md:gap-6 mt-6 sm:mt-8 md:mt-10">
+              <button
+                onClick={() => {
+                  setShowManageModal(false);
+                  setShowNotificationBar(true);
+                }}
+                className="px-6 py-1.5 sm:px-8 sm:py-2 border border-black rounded-full text-sm sm:text-base md:text-lg font-semibold hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDone}
+                className="px-6 py-1.5 sm:px-8 sm:py-2 bg-black text-black rounded-full text-sm sm:text-base md:text-lg font-semibold hover:bg-gray-800"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-};
-
-const styles = {
-  container: {
-    fontFamily: 'Arial, sans-serif',
-    maxWidth: '600px',
-    margin: '40px auto',
-    padding: '20px',
-    borderRadius: '10px',
-    backgroundColor: '#fff',
-    color: '#000',
-    textAlign: 'left',
-  },
-  heading: {
-    fontSize: '24px',
-    marginBottom: '15px',
-  },
-  description: {
-    fontSize: '16px',
-    lineHeight: '1.6',
-    marginBottom: '5px',
-  },
-  link: {
-    textDecoration: 'underline',
-    color: '#000',
-    fontSize: '16px',
-  },
-  checkboxList: {
-    marginTop: '20px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px',
-  },
-  checkboxLabel: {
-    fontSize: '18px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-  },
-  checkbox: {
-    width: '20px',
-    height: '20px',
-  },
-  buttonRow: {
-    display: 'flex',
-    justifyContent: 'left',
-    gap: '20px',
-    marginTop: '30px',
-    flexWrap: 'wrap',
-  },
-  cancelButton: {
-    padding: '10px 25px',
-    border: '2px solid black',
-    backgroundColor: 'transparent',
-    borderRadius: '25px',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-  },
-  doneButton: {
-    padding: '10px 25px',
-    border: 'none',
-    backgroundColor: 'black',
-    color: 'white',
-    borderRadius: '25px',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-  }
 };
 
 export default Cookieoptions;
